@@ -28,6 +28,14 @@ function util.tohex(number)
     return '0x' .. tonumber(sout)
 end
 
+-- debug
+-------------------------------------
+-- Set the type of debugger to use
+-- @param type (1=windows, 2=VEH 3=Kernel, nil=no debugging active)
+-------------------------------------
+function util.debug(type)
+    debugProcess(type)
+end
 
 local luca = {}
 
@@ -39,15 +47,22 @@ luca.m_macro_crc = 0x0
 luca.m_read_crc = 0x0
 
 
--- Inits
+-- Init
 -------------------------------------
 -- Sets image calculations
 -- @param module to set image sizes
 -------------------------------------
 function luca.Init(module)
+    util.debug(2)
     luca.SetImageBase(module)
     luca.SetImageSize(module)
     luca.SetImageEnd(module)
+    luca.FindMacroCRC()
+    luca.FindReadCRC()
+    luca.Copy()
+    -- TODO: should i add tramps?
+    luca.MacroCRC()
+    luca.ReadCRC()
 end
 
 -- SetImageBase
@@ -81,29 +96,74 @@ end
 -- Copies image
 -------------------------------------
 function luca.Copy() 
-    globalalloc(luca.p_image_memory, (luca.m_image_end - luca.m_image_base))
-    readmem(luca.p_image_memory, (luca.m_image_end - luca.m_image_base))
-    -- TODO:
+    autoAssemble(string.format([[
+        globalalloc(luca.p_image_memory, (luca.m_image_end - luca.m_image_base))
+        readmem(luca.p_image_memory, (luca.m_image_end - luca.m_image_base))
+    ]]))
 end
 
+-- FindMacroCRC
+-------------------------------------
+-- Finds MacroCRC address
+-------------------------------------
+function luca.FindMacroCRC() 
+    -- TODO: bp 00401000 - debug_setBreakpoint is bugged.
+    -- TBreakOption = (bo_Break = 0, bo_ChangeRegister = 1, bo_FindCode = 2,
+    -- TBreakpointTrigger = (bptExecute=0, bptAccess=1, bptWrite=2);
+    debug_setBreakpoint(luca.m_image_base, 1,0,  ,1)
+end
+
+
+-- FindReadCRC
+-------------------------------------
+-- Finds ReadCRC address
+-------------------------------------
+function luca.FindMacroCRC() 
+    -- TODO: bp luca.m_macro_crc
+     debug_setBreakpoint(luca.m_macro_crc)
+end
+
+
+-- MacroCRC
+-------------------------------------
+-- Simulates MacroCRC
+-------------------------------------
 function luca.MacroCRC()
     autoAssemble(string.format([[
-		cmp edx, [luca.m_image_base]
-		jb Return
-		cmp edx, [luca.m_image_end]
-		ja Return
-		sub edx, [luca.m_image_base]
-		add edx, [luca.p_image_memory]
-		jmp Return
+        cmp edx, [luca.m_image_base]
+        jb Return
+        cmp edx, [luca.m_image_end]
+        ja Return
+        sub edx, [luca.m_image_base]
+        add edx, [luca.p_image_memory]
+        jmp Return
 
-		Return:
-		/*
-		add al, [edx]
-		pop edx
-		pop ebx
-		push ecx
-		*/
-		jmp dword ptr[luca.m_macro_crc]
-
+        Return:
+        add al, [ecx]
+        pop ecx
+        push ecx
+        jmp dword ptr[luca.m_macro_crc]
+    ]]))
 end
 
+-- ReadCRC
+-------------------------------------
+-- Simulates ReadCRC
+-------------------------------------
+function luca.ReadCRC()
+    autoAssemble(string.format([[
+        cmp edx, [luca.m_image_base]
+        jb Return
+        cmp edx, [luca.m_image_end]
+        ja Return
+        sub edx, [luca.m_image_base]
+        add edx, [luca.p_image_memory]
+        jmp Return
+
+        Return:
+	mov eax, [eax]
+	add [ecx], eax
+	mov esi, ebp
+        jmp dword ptr[luca.m_read_crc]
+    ]]))
+end
