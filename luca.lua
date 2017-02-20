@@ -139,9 +139,9 @@ function luca.MacroCRC()
         jmp Return
 
         Return:
-        add al, [ecx]
-        pop ecx
-        push ecx
+        // add al, [ecx]
+        // pop ecx
+        // push ecx
         jmp dword ptr[luca.m_macro_crc]
     ]]))
 end
@@ -161,9 +161,9 @@ function luca.ReadCRC()
         jmp Return
 
         Return:
-	mov eax, [eax]
-	add [ecx], eax
-	mov esi, ebp
+	// mov eax, [eax]
+	// add [ecx], eax
+	// mov esi, ebp
         jmp dword ptr[luca.m_read_crc]
     ]]))
 end
