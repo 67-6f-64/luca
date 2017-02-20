@@ -110,7 +110,7 @@ function luca.FindMacroCRC()
     -- TODO: bp 00401000 - debug_setBreakpoint is bugged.
     -- TBreakOption = (bo_Break = 0, bo_ChangeRegister = 1, bo_FindCode = 2,
     -- TBreakpointTrigger = (bptExecute=0, bptAccess=1, bptWrite=2);
-    debug_setBreakpoint(luca.m_image_base, 1,0,  ,1)
+    debug_setBreakpoint(luca.m_image_base, )
 end
 
 
