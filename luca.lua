@@ -1,4 +1,21 @@
 --
+--   This file is part of luca.
+--
+--   luca is free software: you can redistribute it and/or modify
+--   it under the terms of the GNU General Public License as published by
+--   the Free Software Foundation, either version 3 of the License, or
+--   (at your option) any later version.
+--
+--   luca is distributed in the hope that it will be useful,
+--   but WITHOUT ANY WARRANTY; without even the implied warranty of
+--   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--   GNU General Public License for more details.
+--
+--   You should have received a copy of the GNU General Public License
+--   along with luca.  If not, see <http://www.gnu.org/licenses/>.
+--
+
+--
 -- luca
 -- Lua Updates CRC Automatically
 --
@@ -45,7 +62,8 @@ luca.m_image_size = 0x0
 luca.m_image_end = 0x0
 luca.m_macro_crc = 0x0
 luca.m_read_crc = 0x0
-
+-- GMS v182.2
+-- https://gist.github.com/f-ve/51b1286bcc835e2eccce38e91b24320b
 
 -- Init
 -------------------------------------
