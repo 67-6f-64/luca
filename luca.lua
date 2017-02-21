@@ -148,18 +148,15 @@ end
 -------------------------------------
 function luca.MacroCRC()
     autoAssemble(string.format([[
-        cmp edx, [luca.m_image_base]
+        cmp ecx, [luca.m_image_base]
         jb Return
-        cmp edx, [luca.m_image_end]
+        cmp ecx, [luca.m_image_end]
         ja Return
-        sub edx, [luca.m_image_base]
-        add edx, [luca.p_image_memory]
+        sub ecx, [luca.m_image_base]
+        add ecx, [luca.p_image_memory]
         jmp Return
 
         Return:
-        // add al, [ecx]
-        // pop ecx
-        // push ecx
         jmp dword ptr[luca.m_macro_crc]
     ]]))
 end
@@ -170,18 +167,15 @@ end
 -------------------------------------
 function luca.ReadCRC()
     autoAssemble(string.format([[
-        cmp edx, [luca.m_image_base]
+        cmp eax, [luca.m_image_base]
         jb Return
-        cmp edx, [luca.m_image_end]
+        cmp eax, [luca.m_image_end]
         ja Return
-        sub edx, [luca.m_image_base]
-        add edx, [luca.p_image_memory]
+        sub eax, [luca.m_image_base]
+        add eax, [luca.p_image_memory]
         jmp Return
 
         Return:
-	// mov eax, [eax]
-	// add [ecx], eax
-	// mov esi, ebp
         jmp dword ptr[luca.m_read_crc]
     ]]))
 end
